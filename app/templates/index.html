@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>PL Predictor</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+    <main>
+      <div class="container">
+        <h1>Premier League Score Predictor</h1>
+
+        <form action="/predict" method="post">
+          <label for="home_team">Home Team:</label>
+          <select name="home_team" required>
+            <option value="">Select a team</option>
+            <option>Arsenal</option>
+            <option>Aston Villa</option>
+            <option>Bournemouth</option>
+            <option>Brentford</option>
+            <option>Brighton</option>
+            <option>Chelsea</option>
+            <option>Crystal Palace</option>
+            <option>Everton</option>
+            <option>Fulham</option>
+            <option>Liverpool</option>
+            <option>Luton Town</option>
+            <option>Man City</option>
+            <option>Man United</option>
+            <option>Newcastle</option>
+            <option>Nott'm Forest</option>
+            <option>Sheffield United</option>
+            <option>Tottenham</option>
+            <option>West Ham</option>
+            <option>Wolves</option>
+            <option>Leicester</option>
+          </select>
+
+          <br /><br />
+
+          <label for="away_team">Away Team:</label>
+          <select name="away_team" required>
+            <option value="">Select a team</option>
+            <option>Arsenal</option>
+            <option>Aston Villa</option>
+            <option>Bournemouth</option>
+            <option>Brentford</option>
+            <option>Brighton</option>
+            <option>Chelsea</option>
+            <option>Crystal Palace</option>
+            <option>Everton</option>
+            <option>Fulham</option>
+            <option>Liverpool</option>
+            <option>Luton Town</option>
+            <option>Man City</option>
+            <option>Man United</option>
+            <option>Newcastle</option>
+            <option>Nott'm Forest</option>
+            <option>Sheffield United</option>
+            <option>Tottenham</option>
+            <option>West Ham</option>
+            <option>Wolves</option>
+            <option>Leicester</option>
+          </select>
+
+          <br /><br />
+          <button type="submit">Predict Score</button>
+        </form>
+
+        <br />
+        <a href="{{ url_for('show_matchweek', week_num=1) }}"
+          >View Matchweek Predictions</a
+        >
+      </div>
+    </main>
+  </body>
+</html>

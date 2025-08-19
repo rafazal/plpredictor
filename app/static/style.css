@@ -1,0 +1,206 @@
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #eaf0f4;
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+
+main {
+  display: flex;
+  justify-content: center;
+  padding: 3rem;
+}
+
+.container {
+  background-color: #fff;
+  padding: 2rem 3rem;
+  max-width: 600px;
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+h1 {
+  color: #003366;
+  margin-bottom: 2rem;
+}
+
+label,
+select,
+button {
+  font-size: 1rem;
+  margin: 0.5rem 0;
+}
+
+select,
+button {
+  padding: 0.5rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+button {
+  background-color: #003366;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #00509e;
+}
+
+a {
+  display: inline-block;
+  margin-top: 1.5rem;
+  color: #00509e;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.prediction-box {
+  background-color: #f4f8fb;
+  border: 2px solid #003366;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 51, 102, 0.1);
+}
+
+.scoreline {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #003366;
+}
+
+.back-link {
+  display: inline-block;
+  margin-top: 2rem;
+  text-decoration: none;
+  color: #00509e;
+  font-weight: bold;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+/* ---- Matchweek page styles ---- */
+
+.header-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.mw-switcher label {
+  display: block;
+  font-size: 0.9rem;
+  margin-bottom: 0.35rem;
+  color: #555;
+}
+
+.select {
+  width: 220px;
+  padding: 0.5rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid #cfd8e3;
+  background: #fff;
+  font-size: 0.95rem;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  border-radius: 10px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
+  background: #fff;
+}
+
+.upcoming {
+  color: #6b7280;
+  font-style: italic;
+}
+
+.score-badge {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  background: #eaf2ff;
+  color: #003366;
+  border: 1px solid #cfe0ff;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.back-link {
+  display: inline-block;
+  margin-top: 1.25rem;
+  color: #00509e;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+/* Ensure table text is always visible */
+.mw-table {
+  background: #fff;
+  color: #111;
+}
+.mw-table th {
+  background: #003366;
+  color: #fff;
+}
+.mw-table td {
+  color: #111;
+}
+
+/* Keep hover effect subtle, but never hide text */
+.mw-table tbody tr {
+  background: #fff;
+}
+.mw-table tbody tr:hover {
+  background: #f6f9fc;
+}
+
+/* Badge & “Upcoming” styles */
+.score-badge {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  background: #eaf2ff;
+  color: #003366;
+  border: 1px solid #cfe0ff;
+  border-radius: 999px;
+  font-weight: 600;
+}
+.upcoming {
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* Table wrapper and layout (in case not added yet) */
+.table-wrap {
+  overflow-x: auto;
+  border-radius: 10px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
+  background: #fff;
+}
+.mw-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 640px;
+}
+.mw-table th,
+.mw-table td {
+  padding: 14px 16px;
+  text-align: center;
+  border-bottom: 1px solid #eef2f7;
+}
