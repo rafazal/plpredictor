@@ -1,4 +1,4 @@
-## ⚽ Premier League Match Predictor
+## Premier League Match Predictor
 
 A Python-based project that predicts **Premier League match scorelines** using historical data and team form.
 
@@ -20,3 +20,4 @@ The model processes multiple seasons of match data, engineers features like **re
 4. Predictions can be surfaced by matchweek as the season progresses
 
 Built as a practical sports analytics project, with room to expand into a full-stack web app.
+
