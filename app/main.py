@@ -7,6 +7,7 @@ from collections import Counter
 import datetime
 from zoneinfo import ZoneInfo
 import datetime as dt
+from pathlib import Path
 
 TZ = ZoneInfo("America/Chicago")
 MATCHWEEK_RELEASE_HOUR_LOCAL = 0  # show predictions at 09:00 local on the week start date
@@ -14,16 +15,18 @@ MATCHWEEK_RELEASE_HOUR_LOCAL = 0  # show predictions at 09:00 local on the week 
 app = Flask(__name__)
 
 # === Load models and data ===
-home_model = joblib.load('models/home_model.pkl')
-away_model = joblib.load('models/away_model.pkl')
+ROOT_DIR = Path(__file__).resolve().parent.parent
 
-with open('models/team_to_id.pkl', 'rb') as f:
+home_model = joblib.load(ROOT_DIR / 'models/home_model.pkl')
+away_model = joblib.load(ROOT_DIR / 'models/away_model.pkl')
+
+with open(ROOT_DIR / 'models/team_to_id.pkl', 'rb') as f:
     team_to_id = joblib.load(f)
 
-with open('models/team_stats_dict.pkl', 'rb') as f:
+with open(ROOT_DIR / 'models/team_stats_dict.pkl', 'rb') as f:
     team_stats_dict = joblib.load(f)
 
-fixtures_df = pd.read_csv("/Users/rafay/Documents/pl-predictor/data/epl-2025-GMTStandardTime.csv")
+fixtures_df = pd.read_csv(ROOT_DIR / "data/epl-2025-GMTStandardTime.csv")
 fixtures_df['Date'] = pd.to_datetime(fixtures_df['Date'], errors='coerce')
 today = pd.to_datetime(datetime.date.today())
 
@@ -42,31 +45,46 @@ def simulate_poisson_result(home_xg, away_xg, n_simulations=200):
     most_common = Counter(outcomes).most_common(1)[0][0]
     return most_common
 
-def predict_score(home_team, away_team):
-    home_id = team_to_id.get(home_team)
-    away_id = team_to_id.get(away_team)
+def predict_score(home_team: str, away_team: str) -> tuple[int, int]:
+    # Infer the exact columns the model was trained on (safer than hardcoding)
+    expected_cols = getattr(home_model, "feature_names_in_", None)
+    if expected_cols is None:
+        # Fallback to your training notebook's list
+        expected_cols = np.array([
+            "HomeRollingGF","HomeRollingGA","HomeRollingPoints","HomeFormScore","HomeGDForm",
+            "AwayRollingGF","AwayRollingGA","AwayRollingPoints","AwayFormScore","AwayGDForm",
+        ])
+    expected_cols = list(expected_cols)
 
     home_stats = team_stats_dict.get(home_team, {})
     away_stats = team_stats_dict.get(away_team, {})
 
-    X_input = pd.DataFrame([{
-        'HomeTeamID': home_id,
-        'AwayTeamID': away_id,
-        'HomeRollingGF': get_stat(home_stats, 'AvgGF'),
-        'HomeRollingGA': get_stat(home_stats, 'AvgGA'),
-        'HomeRollingPoints': get_stat(home_stats, 'PointsPerMatch'),
-        'HomeFormScore': get_stat(home_stats, 'WinRate') * 10,
-        'HomeGDForm': get_stat(home_stats, 'GoalDifference'),
-        'AwayRollingGF': get_stat(away_stats, 'AvgGF'),
-        'AwayRollingGA': get_stat(away_stats, 'AvgGA'),
-        'AwayRollingPoints': get_stat(away_stats, 'PointsPerMatch'),
-        'AwayFormScore': get_stat(away_stats, 'WinRate') * 10,
-        'AwayGDForm': get_stat(away_stats, 'GoalDifference'),
-    }])
+    # Build ONLY the features used during training (NO IDs)
+    row = {
+        "HomeRollingGF":     get_stat(home_stats, "AvgGF"),
+        "HomeRollingGA":     get_stat(home_stats, "AvgGA"),
+        "HomeRollingPoints": get_stat(home_stats, "PointsPerMatch"),
+        "HomeFormScore":     get_stat(home_stats, "WinRate") * 10,
+        "HomeGDForm":        get_stat(home_stats, "GoalDifference"),
+        "AwayRollingGF":     get_stat(away_stats, "AvgGF"),
+        "AwayRollingGA":     get_stat(away_stats, "AvgGA"),
+        "AwayRollingPoints": get_stat(away_stats, "PointsPerMatch"),
+        "AwayFormScore":     get_stat(away_stats, "WinRate") * 10,
+        "AwayGDForm":        get_stat(away_stats, "GoalDifference"),
+    }
 
-    home_xg = home_model.predict(X_input)[0]
-    away_xg = away_model.predict(X_input)[0]
+    # Create the dataframe and FORCE the exact column set & order.
+    X_input = pd.DataFrame([row])
+    # Drop any extra keys that slipped in, and fill missing ones with 0
+    X_input = X_input.reindex(columns=expected_cols, fill_value=0.0)
 
+    # Debug print so you can confirm no IDs are present and order matches
+    print(f"[DEBUG] cols={list(X_input.columns)} | row={row}")
+
+    home_xg = float(home_model.predict(X_input)[0])
+    away_xg = float(away_model.predict(X_input)[0])
+
+    # Use your existing score selection (or the analytic grid if you added it)
     home_goals, away_goals = simulate_poisson_result(home_xg, away_xg)
     return int(home_goals), int(away_goals)
 
@@ -113,7 +131,6 @@ def predict():
     prediction = f"{home_team} {home_goals} - {away_goals} {away_team}"
     return render_template('result.html', prediction=prediction)
 
-@app.route('/matchweek/<int:week_num>')
 @app.route('/matchweek/<int:week_num>')
 def show_matchweek(week_num):
     week_fixtures = fixtures_df[fixtures_df['Round Number'] == week_num]
